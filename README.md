@@ -1,2 +1,2 @@
 # blockveil-aes-tool
-This
+The BlockVeil AES Tool is a fully client-side encryption and decryption tool that runs directly in your browser. With this tool, you can easily encrypt and decrypt text, all while keeping all operations entirely on your own device. No data is ever sent over the internet, and the tool is completely open source and non-profitable. You can review the source code on our GitHub repository if you wish.
