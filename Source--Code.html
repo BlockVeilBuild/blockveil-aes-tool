@@ -1,836 +1,627 @@
 <!DOCTYPE html>
-
-<html lang="bn">
-
+<html lang="en">
 <head>
-
-  <meta charset="utf-8" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <title>Fully Decentralized Encrypt & Decrypt Generate Tool by BlockVeil</title>
-
-
-  <style>
-
-    :root{
-
-      --bg:#f5f7fa;
-
-      --card:#ffffff;
-
-      --accent:#1f6feb;
-
-      --green:#0a8a26;
-
-      --text:#000000;
-
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
-
-    }
-
-
-    html,body{
-
-      margin:0; padding:0; background:var(--bg);
-
-      font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
-
-      color:var(--text);
-
-      font-weight:700;
-
-    }
-
-
-    .wrap{
-
-      max-width:480px; margin:0 auto; padding:18px;
-
-    }
-
-
-    h1{
-
-      font-size:18px;
-
-      margin-bottom:16px;
-
-      text-align:center;
-
-      font-weight:900;
-
-    }
-
-
-    .card{
-
-      background:var(--card);
-
-      padding:16px;
-
-      margin-bottom:20px;
-
-      border-radius:10px;
-
-      box-shadow:0 4px 12px rgba(0,0,0,0.05);
-
-      border:2px solid #000000;
-
-    }
-
-
-    .card-title{
-
-      margin:0 0 10px;
-
-      font-size:18px;
-
-      font-weight:900;
-
-      color:var(--green);
-
-    }
-
-
-    label{
-
-      font-size:14px;
-
-      margin-bottom:6px;
-
-      display:block;
-
-      font-weight:900;
-
-    }
-
-
-    textarea,input{
-
-      width:100%;
-
-      box-sizing:border-box;
-
-      padding:10px;
-
-      border-radius:8px;
-
-      font-family:var(--mono);
-
-      font-size:14px;
-
-      background:#fafafa;
-
-      border:2px solid #000000;
-
-      font-weight:700;
-
-    }
-
-
-    textarea{
-
-      resize:vertical;
-
-      min-height:120px;
-
-    }
-
-
-    .controls{
-
-      display:flex;
-
-      flex-wrap:wrap;
-
-      gap:10px;
-
-      margin-top:10px;
-
-    }
-
-
-    button{
-
-      padding:10px 14px;
-
-      border-radius:8px;
-
-      border:2px solid #000000;
-
-      cursor:pointer;
-
-      font-weight:900;
-
-      background:var(--accent);
-
-      color:white;
-
-      flex:1;
-
-    }
-
-
-    .meta{
-
-      margin-top:14px;
-
-      display:flex;
-
-      flex-direction:column;
-
-      gap:10px;
-
-    }
-
-
-    .field{
-
-      width:100%;
-
-      font-weight:900;
-
-    }
-
-
-    .output{
-
-      padding:10px;
-
-      background:white;
-
-      border-radius:8px;
-
-      border:2px solid #000000;
-
-      font-family:var(--mono);
-
-      font-size:13px;
-
-      min-height:42px;
-
-      overflow:auto;
-
-      filter:blur(5px);
-
-      transition:.18s;
-
-      font-weight:700;
-
-      white-space:pre-wrap;
-
-    }
-
-
-    textarea.output{
-
-      min-height:120px;
-
-      resize:vertical;
-
-    }
-
-
-    .output.reveal{
-
-      filter:none;
-
-    }
-
-
-    .label-row{
-
-      display:flex;
-
-      justify-content:space-between;
-
-      align-items:center;
-
-      gap:8px;
-
-    }
-
-
-    .paste-box{
-
-      font-size:11px;
-
-      padding:4px 8px;
-
-      border-radius:6px;
-
-      border:2px solid #000000;
-
-      background:#eef3ff;
-
-      cursor:pointer;
-
-      font-weight:800;
-
-      white-space:nowrap;
-
-    }
-
-
-    #decryptBtn.pending{
-
-      background:#ffd94d;
-
-      color:#000000;
-
-    }
-
-
-    input.error,
-
-    textarea.error{
-
-      border-color:#ff0000;
-
-    }
-
-
-    input.error::placeholder,
-
-    textarea.error::placeholder{
-
-      color:#ff0000;
-
-      opacity:1;
-
-    }
-
-  </style>
-
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>BlockVeil — AES-256 Encryption Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#f0ede8;--surface:#faf8f5;--border:#1a1a1a;
+  --text:#0d0d0d;--text-muted:#555;--accent:#1a1a1a;--accent-fg:#f0ede8;
+  --green:#0a5c2e;--green-bg:#d4f0e0;--red:#8b0000;--red-bg:#fde8e8;
+  --yellow:#7a5c00;--yellow-bg:#fff3cd;
+  --mono:'Space Mono',monospace;--display:'Syne',sans-serif;
+  --radius:6px;--shadow:3px 3px 0px #1a1a1a;
+}
+[data-theme="dark"]{
+  --bg:#080808;--surface:#111;--border:#d4cfc9;
+  --text:#f0ede8;--text-muted:#888;--accent:#f0ede8;--accent-fg:#0d0d0d;
+  --green:#4ade80;--green-bg:#052e16;--red:#f87171;--red-bg:#2d0000;
+  --yellow:#fbbf24;--yellow-bg:#2a1a00;--shadow:3px 3px 0px #d4cfc9;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;-webkit-text-size-adjust:100%}
+html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--mono);overflow-x:hidden;}
+
+#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+.site-wrap{position:relative;z-index:1;width:480px;max-width:calc(100vw - 32px);margin:0 auto;padding:24px 16px 40px;}
+
+/* KEYFRAMES */
+@keyframes logoReveal{0%{opacity:0;filter:blur(8px);letter-spacing:14px;transform:scale(.9)}65%{letter-spacing:0px}100%{opacity:1;filter:blur(0);letter-spacing:-0.5px;transform:scale(1)}}
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes cardIn{0%{opacity:0;transform:translateY(16px) scale(.97)}65%{transform:translateY(-2px) scale(1.003)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes resultSpring{0%{opacity:0;max-height:0;transform:scaleY(0);transform-origin:top}60%{transform:scaleY(1.03);transform-origin:top}100%{opacity:1;max-height:600px;transform:scaleY(1);transform-origin:top}}
+@keyframes scanLine{0%{left:-60%;opacity:0}10%{opacity:1}100%{left:120%;opacity:0}}
+@keyframes shimmer{from{background-position:-300% center}to{background-position:300% center}}
+@keyframes rippleOut{0%{transform:translate(-50%,-50%) scale(0);opacity:.3}100%{transform:translate(-50%,-50%) scale(5);opacity:0}}
+@keyframes toastIn{0%{opacity:0;transform:translateY(12px) scale(.85)}60%{transform:translateY(-3px) scale(1.04)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes toastOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:translateY(8px) scale(.88)}}
+@keyframes revealIn{from{opacity:.3;filter:blur(2px);transform:translateY(4px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+@keyframes errorShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes hintPulse{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes tabSlide{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes methodSlide{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes particleFly{0%{opacity:0;transform:translate(-50%,-50%) scale(1)}20%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--tx)),calc(-50% + var(--ty))) scale(0.3)}}
+
+/* HEADER */
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;position:relative;animation:fadeSlideUp .6s cubic-bezier(.16,1,.3,1) forwards;}
+.header-line{position:absolute;bottom:-10px;left:0;width:40px;height:2px;background:var(--border);animation:scanLine 1.4s ease .7s 1 forwards;opacity:0;}
+
+/* LOGO */
+.logo{font-family:var(--display);font-size:20px;font-weight:900;white-space:nowrap;cursor:default;animation:logoReveal 1.1s cubic-bezier(.16,1,.3,1) forwards;}
+.logo span{color:var(--text-muted)}
+
+/* THEME BTN */
+.theme-btn{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:6px 12px;cursor:pointer;font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text);box-shadow:var(--shadow);user-select:none;white-space:nowrap;flex-shrink:0;position:relative;overflow:hidden;transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;}
+.theme-btn:hover{transform:translateY(-2px) scale(1.04);box-shadow:5px 5px 0 var(--border)}
+.theme-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--border)}
+.theme-btn::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:rgba(255,255,255,.2);border-radius:50%;transform:translate(-50%,-50%);transition:width .4s,height .4s,opacity .4s;opacity:0;}
+.theme-btn:active::after{width:120px;height:120px;opacity:1}
+
+/* TABS */
+.tabs{display:flex;margin-bottom:20px;border:2px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);animation:fadeSlideUp .6s cubic-bezier(.16,1,.3,1) .1s both;}
+.tab{flex:1;padding:11px 8px;text-align:center;font-family:var(--mono);font-size:13px;font-weight:700;cursor:pointer;border:none;background:var(--surface);color:var(--text-muted);letter-spacing:.3px;position:relative;overflow:hidden;transition:color .28s;}
+.tab-bg{position:absolute;inset:0;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.4,0,.2,1);z-index:0;}
+.tab.active .tab-bg{transform:scaleX(1)}
+.tab.active{color:var(--accent-fg)}
+.tab-text{position:relative;z-index:1}
+.tab:not(.active):hover{color:var(--text)}
+.tab::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:rgba(255,255,255,.18);border-radius:50%;transform:translate(-50%,-50%);transition:width .45s,height .45s,opacity .45s;opacity:0;}
+.tab:active::after{width:200px;height:200px;opacity:1}
+
+/* CARD */
+.card{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);overflow:hidden;width:100%;position:relative;animation:cardIn .55s cubic-bezier(.16,1,.3,1) both;transition:transform .22s cubic-bezier(.34,1.56,.64,1),box-shadow .22s;}
+.card:nth-child(1){animation-delay:.14s}.card:nth-child(2){animation-delay:.24s}.card:nth-child(3){animation-delay:.34s}
+.card:hover{transform:translateY(-2px) scale(1.005);box-shadow:5px 5px 0 var(--border)}
+.card-shimmer{position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.04) 50%,transparent 65%);background-size:300% 100%;opacity:0;transition:opacity .3s;}
+.card:hover .card-shimmer{opacity:1;animation:shimmer .7s ease forwards}
+#encResultCard,#decResultCard{animation:resultSpring .5s cubic-bezier(.34,1.56,.64,1) both !important;}
+.card-label{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;}
+
+/* METHOD BTN */
+.method-toggle{display:flex;gap:6px;margin-bottom:14px}
+.method-btn{flex:1;padding:9px 6px;border:2px solid var(--border);border-radius:var(--radius);font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer;background:transparent;color:var(--text-muted);position:relative;overflow:hidden;transition:color .28s,transform .18s cubic-bezier(.34,1.56,.64,1);}
+.method-btn-bg{position:absolute;inset:0;background:var(--accent);transform:scaleY(0);transform-origin:bottom;transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:0;}
+.method-btn.active .method-btn-bg{transform:scaleY(1)}
+.method-btn.active{color:var(--accent-fg)}
+.method-btn-text{position:relative;z-index:1}
+.method-btn:hover:not(.active){transform:translateY(-1px);color:var(--text)}
+.method-btn:active{transform:scale(.95)}
+
+/* FIELDS */
+.field-wrap{margin-bottom:12px}
+.field-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.field-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted)}
+.char-count{font-size:10px;color:var(--text-muted);white-space:nowrap;transition:color .25s,transform .25s}
+.char-count.warn{color:var(--yellow);transform:scale(1.06)}
+.char-count.over{color:var(--red);animation:hintPulse .5s infinite}
+textarea,input[type=text],input[type=password]{width:100%;padding:9px 11px;border:2px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text);font-family:var(--mono);font-size:12px;font-weight:400;resize:vertical;-webkit-appearance:none;display:block;overflow-wrap:break-word;word-break:break-word;transition:border-color .22s,box-shadow .22s,transform .18s;}
+textarea{min-height:100px;max-height:260px}
+textarea:focus,input:focus{outline:none;border-color:var(--accent);box-shadow:2px 2px 0 var(--accent);transform:translateY(-1px);}
+input[type=password]{letter-spacing:2px}
+.field-error{border-color:var(--red)!important;animation:errorShake .35s ease}
+.error-msg{font-size:10px;color:var(--red);margin-top:3px;font-weight:700;animation:fadeSlideUp .22s ease}
+
+/* PW STRENGTH */
+.pw-strength{margin-top:5px}
+.pw-bar-track{height:3px;background:var(--bg);border:1px solid var(--border);border-radius:2px;overflow:hidden}
+.pw-bar-fill{height:100%;width:0%;border-radius:2px;transition:width .5s cubic-bezier(.4,0,.2,1),background .4s}
+.pw-label{font-size:10px;margin-top:3px;font-weight:700;color:var(--text-muted);transition:color .3s}
+
+/* OUTPUT */
+.output-wrap{position:relative;width:100%}
+.output-field{width:100%;padding:9px 11px;border:2px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text);font-family:var(--mono);font-size:11px;min-height:76px;max-height:180px;overflow:auto;white-space:pre-wrap;word-break:break-all;overflow-wrap:break-word;filter:blur(6px);transition:filter .4s cubic-bezier(.4,0,.2,1),transform .2s,box-shadow .2s;cursor:pointer;user-select:none;display:block;}
+.output-field:hover{transform:scale(1.006);box-shadow:0 3px 14px rgba(0,0,0,.07)}
+.output-field.reveal{filter:none;user-select:text;animation:revealIn .3s ease forwards}
+.output-hint{font-size:10px;color:var(--text-muted);margin-top:3px;font-weight:700;text-align:right;animation:hintPulse 2.5s ease 1.5s infinite;}
+
+/* BUTTONS */
+.btn-row{display:flex;gap:8px;margin-top:8px}
+.btn{flex:1;padding:10px 12px;border:2px solid var(--border);border-radius:var(--radius);font-family:var(--mono);font-size:13px;font-weight:700;cursor:pointer;box-shadow:var(--shadow);white-space:nowrap;position:relative;overflow:hidden;transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;}
+.btn::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:rgba(255,255,255,.2);border-radius:50%;transform:translate(-50%,-50%);transition:width .5s,height .5s,opacity .5s;opacity:0;}
+.btn:active::after{width:220px;height:220px;opacity:1}
+.btn:active{transform:translate(2px,2px)!important;box-shadow:1px 1px 0 var(--border)!important}
+.btn:not(:disabled):hover{transform:translateY(-2px) scale(1.02);box-shadow:5px 5px 0 var(--border)}
+.btn-primary{background:var(--accent);color:var(--accent-fg)}
+.btn-secondary{background:var(--surface);color:var(--text)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
+.btn-spinner{display:inline-block;width:10px;height:10px;border:2px solid transparent;border-top-color:currentColor;border-radius:50%;margin-right:6px;vertical-align:middle;animation:spin .7s linear infinite;}
+
+/* MISC */
+.packed-note{font-size:10px;color:var(--text-muted);margin-bottom:8px;line-height:1.6;font-weight:700}
+.sep{display:flex;align-items:center;gap:8px;margin:8px 0}
+.sep-line{flex:1;height:1px;background:var(--border);opacity:.3}
+.sep-text{font-size:9px;color:var(--text-muted);font-weight:700;letter-spacing:.5px;white-space:nowrap}
+.panel{display:none}.panel.active{display:block}
+.info-box{background:var(--green-bg);border:2px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:12px;animation:fadeSlideUp .3s ease;}
+.info-box p{font-size:10px;color:var(--green);font-weight:700;line-height:1.7}
+
+/* TOAST */
+.toast-container{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:6px;pointer-events:none;}
+.toast{background:var(--accent);color:var(--accent-fg);padding:9px 18px;border-radius:var(--radius);font-family:var(--mono);font-size:11px;font-weight:700;border:2px solid var(--border);animation:toastIn .3s cubic-bezier(.34,1.56,.64,1),toastOut .3s ease 1.7s forwards;box-shadow:var(--shadow);max-width:320px;text-align:center;line-height:1.6;}
+
+/* FOOTER */
+.footer{text-align:center;margin-top:28px;padding-bottom:24px;font-size:10px;color:var(--text-muted);line-height:1.9;animation:fadeSlideUp .6s ease .5s both;}
+.footer a{color:var(--text);font-weight:700;text-decoration:underline;text-underline-offset:2px;transition:opacity .2s}
+.footer a:hover{opacity:.6}
+</style>
 </head>
-
-
 <body>
 
-  <div class="wrap">
+<canvas id="bgCanvas"></canvas>
+<div class="toast-container" id="toastContainer"></div>
 
-    <h1>Fully Decentralized Encrypt & Decrypt Generate Tool by BlockVeil</h1>
+<div class="site-wrap">
+  <header class="header">
+    <div class="logo">Block<span>Veil</span></div>
+    <div class="header-line"></div>
+    <button class="theme-btn" id="themeBtn">◐ Dark</button>
+  </header>
 
-
-    <div class="card">
-
-      <h3 class="card-title">Encrypt</h3>
-
-
-      <div class="label-row">
-
-        <label>Plaintext</label>
-
-        <div id="pastePlaintext" class="paste-box">Paste your text</div>
-
-      </div>
-
-      <p style="font-size:12px; margin:6px 0 10px; font-weight:700;">
-
-        Write the text you want to encrypt in the box below.!
-
-      </p>
-
-
-      <textarea id="plaintext"></textarea>
-
-      <div class="controls">
-
-        <button id="encryptBtn">Encrypt</button>
-
-      </div>
-
-
-      <label style="margin-top:14px">Ciphertext (Base64)</label>
-
-      <textarea id="ciphertext" readonly></textarea>
-
-
-      <div class="meta">
-
-        <div class="field">
-
-          <label>Key (hex)</label>
-
-          <div id="keyHex" class="output"></div>
-
-        </div>
-
-
-        <div class="field">
-
-          <label>IV (hex)</label>
-
-          <div id="ivHex" class="output"></div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <div class="card">
-
-      <h3 class="card-title">Decrypt</h3>
-
-
-      <div class="label-row">
-
-        <label>Ciphertext (Base64)</label>
-
-        <div id="pasteCiphertextDec" class="paste-box">Paste here</div>
-
-      </div>
-
-      <textarea id="ciphertextDec"></textarea>
-
-
-      <div class="label-row">
-
-        <label>Key (hex)</label>
-
-        <div id="pasteKeyDec" class="paste-box">Paste here</div>
-
-      </div>
-
-      <input id="keyHexDec" type="text">
-
-
-      <div class="label-row">
-
-        <label>IV (hex)</label>
-
-        <div id="pasteIvDec" class="paste-box">Paste here</div>
-
-      </div>
-
-      <input id="ivHexDec" type="text">
-
-
-      <div class="controls">
-
-        <button id="decryptBtn" class="pending">Decrypt</button>
-
-      </div>
-
-
-      <label style="margin-top:14px">Plaintext</label>
-
-      <textarea id="plaintextDec" class="output" readonly></textarea>
-
-    </div>
-
+  <div class="tabs">
+    <button class="tab active" data-panel="encrypt"><div class="tab-bg"></div><span class="tab-text">Encrypt</span></button>
+    <button class="tab" data-panel="decrypt"><div class="tab-bg"></div><span class="tab-text">Decrypt</span></button>
   </div>
 
+  <!-- ENCRYPT -->
+  <div class="panel active" id="panel-encrypt">
+    <div class="card">
+      <div class="card-shimmer"></div>
+      <div class="card-label" style="text-transform:none;letter-spacing:0;font-size:14px">Encryption Method</div>
+      <div class="method-toggle">
+        <button class="method-btn active" id="enc-pw-btn" onclick="setEncMethod('password')">
+          <div class="method-btn-bg"></div><span class="method-btn-text">Password</span>
+        </button>
+        <button class="method-btn" id="enc-key-btn" onclick="setEncMethod('key')">
+          <div class="method-btn-bg"></div><span class="method-btn-text">256 Bit Key</span>
+        </button>
+      </div>
+      <div id="enc-pw-fields">
+        <div class="field-wrap">
+          <div class="field-header">
+            <span class="field-label" style="text-transform:none;letter-spacing:0">Password</span>
+          </div>
+          <input type="password" id="encPassword" placeholder="Enter a strong password..." oninput="updateStrength()"/>
+          <div class="pw-strength">
+            <div class="pw-bar-track"><div class="pw-bar-fill" id="pwBar"></div></div>
+            <div class="pw-label" id="pwLabel">Enter a password</div>
+          </div>
+        </div>
+      </div>
+      <div id="enc-key-fields" style="display:none">
+        <div class="info-box">
+          <p>A cryptographically secure 256-bit key is generated for you. The encrypted text and key are shown below after encryption. Store both offline. There is no backup, no recovery, no second chance.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-shimmer"></div>
+      <div class="card-label" style="text-transform:none;letter-spacing:0;font-size:14px">Plain Text</div>
+      <div class="field-wrap">
+        <div class="field-header">
+          <span class="field-label" style="text-transform:none;letter-spacing:0">Your Message</span>
+          <span class="char-count" id="encCharCount">0 / 50,000</span>
+        </div>
+        <textarea id="encPlaintext" placeholder="Type or paste your text here..." oninput="updateCharCount()"></textarea>
+        <div class="error-msg" id="encPlaintextErr" style="display:none"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="encryptBtn" onclick="doEncrypt()">Encrypt →</button>
+      </div>
+    </div>
+
+    <div class="card" id="encResultCard" style="display:none">
+      <div class="card-shimmer"></div>
+      <div class="card-label">Encrypted Output</div>
+      <p class="packed-note">Store your Ciphertext, Hex Key, and Password separately in a secure location. If any one is lost, recovery is impossible.</p>
+      <div class="field-header" style="margin-bottom:6px">
+        <span class="field-label" style="text-transform:none;font-size:12px;letter-spacing:0">Ciphertext</span>
+      </div>
+      <div class="output-wrap">
+        <div class="output-field" id="encOutput" onclick="revealOrCopy(this,'encOutputVal')"></div>
+        <input type="hidden" id="encOutputVal"/>
+      </div>
+      <div class="output-hint">Click to reveal · click again to copy</div>
+      <div id="encKeySection" style="display:none;margin-top:14px">
+        <div class="sep"><div class="sep-line"></div><div class="sep-text">YOUR GENERATED KEY</div><div class="sep-line"></div></div>
+        <div class="field-header" style="margin-bottom:6px">
+          <span class="field-label" style="text-transform:none;letter-spacing:0">Your Hex Key</span>
+        </div>
+        <div class="output-wrap">
+          <div class="output-field" id="encKeyOut" onclick="revealOrCopy(this,'encKeyOutVal')"></div>
+          <input type="hidden" id="encKeyOutVal"/>
+        </div>
+        <div class="output-hint">Click to reveal · click again to copy</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DECRYPT -->
+  <div class="panel" id="panel-decrypt">
+    <div class="card">
+      <div class="card-shimmer"></div>
+      <div class="card-label" style="text-transform:none;letter-spacing:0;font-size:14px">Decryption Method</div>
+      <div class="method-toggle">
+        <button class="method-btn active" id="dec-pw-btn" onclick="setDecMethod('password')">
+          <div class="method-btn-bg"></div><span class="method-btn-text">Password</span>
+        </button>
+        <button class="method-btn" id="dec-key-btn" onclick="setDecMethod('key')">
+          <div class="method-btn-bg"></div><span class="method-btn-text">256 Bit Key</span>
+        </button>
+      </div>
+      <div id="dec-pw-fields">
+        <div class="field-wrap">
+          <div class="field-header"><span class="field-label" style="text-transform:none;letter-spacing:0">Password</span></div>
+          <input type="password" id="decPassword" placeholder="Enter the decryption password..."/>
+          <div class="error-msg" id="decPasswordErr" style="display:none"></div>
+        </div>
+      </div>
+      <div id="dec-key-fields" style="display:none">
+        <div class="field-wrap">
+          <div class="field-header">
+            <span class="field-label" style="text-transform:none;letter-spacing:0">Your Hex Key</span>
+            <button class="theme-btn" style="font-size:10px;padding:3px 8px;box-shadow:none" onclick="pasteInto('decKey')">Paste</button>
+          </div>
+          <input type="text" id="decKey" placeholder="Write Your 64 Character Hex Key!" oninput="validateKeyField()"/>
+          <div class="error-msg" id="decKeyErr" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-shimmer"></div>
+      <div class="card-label" style="text-transform:none;letter-spacing:0;font-size:14px">Ciphertext</div>
+      <div class="field-wrap">
+        <div class="field-header"><span class="field-label" style="text-transform:none;letter-spacing:0">Write your Ciphertext</span></div>
+        <textarea id="decCiphertext" placeholder="Type your encrypted Ciphertext..."></textarea>
+        <div class="error-msg" id="decCiphertextErr" style="display:none"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="decryptBtn" onclick="doDecrypt()">Decrypt →</button>
+      </div>
+    </div>
+
+    <div class="card" id="decResultCard" style="display:none">
+      <div class="card-shimmer"></div>
+      <div class="card-label">Decrypted Text</div>
+      <div class="output-wrap">
+        <div class="output-field" id="decOutput" onclick="revealOrCopy(this,'decOutputVal')"></div>
+        <input type="hidden" id="decOutputVal"/>
+      </div>
+      <div class="output-hint">Click to reveal · Click again to copy</div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>Your data never touches a server. Encrypted locally. Stored nowhere. Visible to no one.</p>
+    <p style="margin-top:4px">Powered by AES-256-GCM, the same standard trusted by governments and financial institutions worldwide.</p>
+    <p style="margin-top:4px">Open Source · <a href="https://github.com/BlockVeilBuild/blockveil-aes-tool" target="_blank">View on GitHub</a></p>
+    <p style="margin-top:4px">BlockVeil — <em>We build in silence.</em></p>
+  </footer>
+</div>
 
 <script>
+// ── CANVAS BACKGROUND: Floating hex chars ──────────────────
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
 
-  const toHex = (a) => Array.from(a).map(b => b.toString(16).padStart(2,"0")).join("");
+const HEX = '0123456789ABCDEF';
+function rh(){ return HEX[Math.floor(Math.random()*16)]; }
 
+let particles = [];
+function mkP(){
+  return { x:Math.random()*W, y:H+10, vy:-(0.2+Math.random()*.45), vx:(Math.random()-.5)*.25,
+    alpha:0, maxA:0.035+Math.random()*.055, size:9+Math.floor(Math.random()*5),
+    char:rh(), ct:0, ci:25+Math.floor(Math.random()*55), life:0, maxL:280+Math.random()*220 };
+}
+for(let i=0;i<32;i++){
+  const p=mkP(); p.y=Math.random()*H; p.life=Math.random()*p.maxL;
+  p.alpha=p.maxA*(p.life<40?p.life/40:p.life>p.maxL-40?(p.maxL-p.life)/40:1);
+  particles.push(p);
+}
+function gc(){ return document.documentElement.getAttribute('data-theme')==='dark' ? 'rgba(240,237,232,' : 'rgba(26,26,26,'; }
+function tick(){
+  ctx.clearRect(0,0,W,H);
+  const col=gc();
+  particles.forEach((p,i)=>{
+    p.life++; p.ct++; p.x+=p.vx; p.y+=p.vy;
+    if(p.ct>=p.ci){p.char=rh();p.ct=0;}
+    const f=p.life<50?p.life/50:p.life>p.maxL-50?(p.maxL-p.life)/50:1;
+    ctx.font=`bold ${p.size}px 'Space Mono',monospace`;
+    ctx.fillStyle=col+(p.maxA*f)+')';
+    ctx.fillText(p.char,p.x,p.y);
+    if(p.life>=p.maxL||p.y<-20) particles[i]=mkP();
+  });
+  requestAnimationFrame(tick);
+}
+tick();
 
-  function hexToBytes(h){
+// ── CARD 3D TILT ────────────────────────────────────────────
+document.querySelectorAll('.card').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const x=(e.clientX-r.left-r.width/2)/r.width;
+    const y=(e.clientY-r.top-r.height/2)/r.height;
+    card.style.transform=`translateY(-2px) rotateX(${-y*5}deg) rotateY(${x*5}deg) scale(1.005)`;
+    card.style.boxShadow=`${3-x*4}px ${3-y*4}px 0 var(--border)`;
+  });
+  card.addEventListener('mouseleave',()=>{ card.style.transform=''; card.style.boxShadow=''; });
+});
 
-    if(!h) return new Uint8Array();
+// ── STATE ───────────────────────────────────────────────────
+let encMethod='password', decMethod='password';
+const MAX_CHARS=50000;
 
-    if(h.length%2) throw "Invalid hex";
+// ── THEME ───────────────────────────────────────────────────
+let dark=false;
+document.getElementById('themeBtn').onclick=function(e){
+  // Create full-screen ripple from button position
+  const btn = this;
+  const r = btn.getBoundingClientRect();
+  const cx = r.left + r.width/2;
+  const cy = r.top + r.height/2;
 
-    let o = new Uint8Array(h.length/2);
+  const ripple = document.createElement('div');
+  const maxDim = Math.max(window.innerWidth, window.innerHeight) * 2.5;
+  ripple.style.cssText = `
+    position:fixed;
+    left:${cx}px;top:${cy}px;
+    width:10px;height:10px;
+    border-radius:50%;
+    background:${dark ? '#f0ede8' : '#0d0d0d'};
+    transform:translate(-50%,-50%) scale(0);
+    pointer-events:none;
+    z-index:99999;
+    transition:transform .55s cubic-bezier(.4,0,.2,1), opacity .55s ease;
+    opacity:1;
+  `;
+  document.body.appendChild(ripple);
 
-    for(let i=0;i<o.length;i++) o[i] = parseInt(h.substr(i*2,2),16);
+  requestAnimationFrame(()=>{
+    ripple.style.transform = `translate(-50%,-50%) scale(${maxDim/10})`;
+    ripple.style.opacity = '0';
+  });
 
-    return o;
+  // Switch theme at midpoint
+  setTimeout(()=>{
+    dark = !dark;
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : '');
+    btn.textContent = dark ? '◑ Light' : '◐ Dark';
+  }, 220);
 
+  setTimeout(()=> ripple.remove(), 600);
+};
+
+// ── TABS ────────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>{ p.classList.remove('active'); });
+    tab.classList.add('active');
+    const panel=document.getElementById('panel-'+tab.dataset.panel);
+    panel.classList.add('active');
+    panel.style.animation='none'; void panel.offsetWidth;
+    panel.style.animation='fadeSlideUp .4s cubic-bezier(.16,1,.3,1) forwards';
+  });
+});
+
+// ── METHOD TOGGLE ───────────────────────────────────────────
+function animShow(el){ el.style.display=''; el.style.animation='none'; void el.offsetWidth; el.style.animation='fadeSlideUp .3s ease forwards'; }
+function setEncMethod(m){
+  encMethod=m;
+  document.getElementById('enc-pw-btn').classList.toggle('active',m==='password');
+  document.getElementById('enc-key-btn').classList.toggle('active',m==='key');
+  const pw=document.getElementById('enc-pw-fields'), ky=document.getElementById('enc-key-fields');
+  if(m==='password'){ky.style.display='none';animShow(pw);}else{pw.style.display='none';animShow(ky);}
+  document.getElementById('encResultCard').style.display='none';
+}
+function setDecMethod(m){
+  decMethod=m;
+  document.getElementById('dec-pw-btn').classList.toggle('active',m==='password');
+  document.getElementById('dec-key-btn').classList.toggle('active',m==='key');
+  const pw=document.getElementById('dec-pw-fields'), ky=document.getElementById('dec-key-fields');
+  if(m==='password'){ky.style.display='none';animShow(pw);}else{pw.style.display='none';animShow(ky);}
+  document.getElementById('decResultCard').style.display='none';
+}
+
+// ── CHAR COUNTER ────────────────────────────────────────────
+function updateCharCount(){
+  const ta=document.getElementById('encPlaintext'), el=document.getElementById('encCharCount');
+  const n=ta.value.length;
+  el.textContent=n.toLocaleString()+' / 50,000';
+  el.className='char-count'+(n>MAX_CHARS?' over':n>40000?' warn':'');
+}
+
+// ── PW STRENGTH ─────────────────────────────────────────────
+function updateStrength(){
+  const pw=document.getElementById('encPassword').value;
+  const bar=document.getElementById('pwBar'), lbl=document.getElementById('pwLabel');
+  if(!pw){bar.style.width='0%';lbl.textContent='Enter a password';return;}
+  let s=0;
+  if(pw.length>=8)s++;if(pw.length>=14)s++;
+  if(/[A-Z]/.test(pw)&&/[a-z]/.test(pw))s++;
+  if(/[0-9]/.test(pw))s++;if(/[^A-Za-z0-9]/.test(pw))s++;
+  const lv=[{w:'20%',bg:'#c0392b',t:'Very Weak'},{w:'40%',bg:'#e67e22',t:'Weak'},{w:'60%',bg:'#f1c40f',t:'Fair'},{w:'80%',bg:'#27ae60',t:'Strong'},{w:'100%',bg:'#1a7a4a',t:'Very Strong'}];
+  const l=lv[Math.min(s,lv.length)-1]||lv[0];
+  bar.style.width=l.w; bar.style.background=l.bg;
+  lbl.textContent=l.t; lbl.style.color=l.bg;
+}
+
+// ── KEY VALIDATE ─────────────────────────────────────────────
+function validateKeyField(){
+  const el=document.getElementById('decKey'), err=document.getElementById('decKeyErr');
+  const v=el.value.trim();
+  if(v && !/^[0-9a-fA-F]{64}$/.test(v)){
+    err.textContent=v.length!==64?`Key must be 64 hex chars (got ${v.length})`:'Key contains invalid characters. Use only 0-9 and A-F.';
+    err.style.display='';el.classList.add('field-error');
+  } else {err.style.display='none';el.classList.remove('field-error');}
+}
+
+// ── CRYPTO ──────────────────────────────────────────────────
+const toHex=a=>Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join('');
+function hexToBytes(h){ if(!h||h.length%2)throw new Error('Invalid hex'); const o=new Uint8Array(h.length/2); for(let i=0;i<o.length;i++)o[i]=parseInt(h.substr(i*2,2),16); return o; }
+function bufToB64(buf){ const b=new Uint8Array(buf);let s=''; for(let i=0;i<b.byteLength;i++)s+=String.fromCharCode(b[i]); return btoa(s); }
+function b64ToBuf(b){ const s=atob(b);const a=new Uint8Array(s.length); for(let i=0;i<s.length;i++)a[i]=s.charCodeAt(i); return a; }
+async function deriveKey(pw,salt,use){ const enc=new TextEncoder(); const base=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveKey']); return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:310000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,[use]); }
+
+// ── ENCRYPT ──────────────────────────────────────────────────
+async function doEncrypt(){
+  const pt=document.getElementById('encPlaintext').value;
+  const errEl=document.getElementById('encPlaintextErr');
+  errEl.style.display='none'; document.getElementById('encPlaintext').classList.remove('field-error');
+  if(!pt.trim()){errEl.textContent='Please enter some text to encrypt.';errEl.style.display='';document.getElementById('encPlaintext').classList.add('field-error');return;}
+  if(pt.length>MAX_CHARS){errEl.textContent=`Text too long. Max ${MAX_CHARS.toLocaleString()} chars.`;errEl.style.display='';return;}
+  const btn=document.getElementById('encryptBtn');
+  btn.disabled=true; btn.innerHTML='<span class="btn-spinner"></span>Encrypting...';
+  try{
+    const data=new TextEncoder().encode(pt);
+    const iv=crypto.getRandomValues(new Uint8Array(12));
+    if(encMethod==='password'){
+      const pw=document.getElementById('encPassword').value;
+      if(!pw){errEl.textContent='Enter a password first.';errEl.style.display='';document.getElementById('encPassword').classList.add('field-error');return;}
+      const salt=crypto.getRandomValues(new Uint8Array(16));
+      const key=await deriveKey(pw,salt,'encrypt');
+      const buf=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,data);
+      setOutput('encOutput','encOutputVal',toHex(salt)+toHex(iv)+bufToB64(buf));
+      document.getElementById('encKeySection').style.display='none';
+    } else {
+      const raw=crypto.getRandomValues(new Uint8Array(32));
+      const key=await crypto.subtle.importKey('raw',raw,{name:'AES-GCM'},false,['encrypt']);
+      const buf=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,data);
+      setOutput('encOutput','encOutputVal',toHex(iv)+bufToB64(buf));
+      setOutput('encKeyOut','encKeyOutVal',toHex(raw));
+      document.getElementById('encKeySection').style.display='';
+    }
+    showResult('encResultCard');
+    showToast('Encrypted! Click output to reveal & copy.');
+    burst(btn);
+  } catch(e){ console.warn('Encryption error occurred.'); showToast('Encryption failed.',true); }
+  finally{ btn.disabled=false; btn.textContent='Encrypt →'; }
+}
+
+// ── DECRYPT ──────────────────────────────────────────────────
+async function doDecrypt(){
+  const bundle=document.getElementById('decCiphertext').value.trim();
+  const ctErr=document.getElementById('decCiphertextErr');
+  ctErr.style.display='none'; document.getElementById('decCiphertext').classList.remove('field-error');
+  if(!bundle){ctErr.textContent='Enter the encrypted text first.';ctErr.style.display='';document.getElementById('decCiphertext').classList.add('field-error');return;}
+  const btn=document.getElementById('decryptBtn');
+  btn.disabled=true; btn.innerHTML='<span class="btn-spinner"></span>Decrypting...';
+  btn.style.background='#0a8a26'; btn.style.color='#fff'; btn.style.borderColor='#0a8a26';
+  try{
+    let pt='';
+    if(decMethod==='password'){
+      if(bundle.length<57)throw new Error('Invalid encrypted text.');
+      const salt=hexToBytes(bundle.slice(0,32)), iv=hexToBytes(bundle.slice(32,56)), ct=b64ToBuf(bundle.slice(56));
+      const pw=document.getElementById('decPassword').value;
+      if(!pw)throw new Error('Enter the password.');
+      const key=await deriveKey(pw,salt,'decrypt');
+      pt=new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv},key,ct));
+    } else {
+      if(bundle.length<25)throw new Error('Invalid encrypted text.');
+      const iv=hexToBytes(bundle.slice(0,24)), ct=b64ToBuf(bundle.slice(24));
+      const kh=document.getElementById('decKey').value.trim();
+      if(!kh)throw new Error('Enter your hex key.');
+      if(!/^[0-9a-fA-F]{64}$/.test(kh))throw new Error('Key must be 64 hexadecimal characters (0-9, A-F).');
+      const key=await crypto.subtle.importKey('raw',hexToBytes(kh),{name:'AES-GCM'},false,['decrypt']);
+      pt=new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv},key,ct));
+    }
+    setOutput('decOutput','decOutputVal',pt);
+    showResult('decResultCard');
+    showToast('Decrypted successfully!');
+    burst(btn);
+  } catch(e){
+    console.warn('Decryption error occurred.');
+    document.getElementById('decCiphertext').classList.add('field-error');
+    const m=e.message||'';
+    showToast('Decryption failed. Please double-check your Ciphertext, Password and Hex Key then try again.',true);
   }
-
-
-  function base64ToBytes(b){
-
-    let s = atob(b), a = new Uint8Array(s.length);
-
-    for(let i=0;i<s.length;i++) a[i] = s.charCodeAt(i);
-
-    return a;
-
-  }
-
-
-  const plaintext    = document.getElementById("plaintext");
-
-  const ciphertext   = document.getElementById("ciphertext");
-
-  const keyHex       = document.getElementById("keyHex");
-
-  const ivHex        = document.getElementById("ivHex");
-
-
-  const ciphertextDec = document.getElementById("ciphertextDec");
-
-  const keyHexDec     = document.getElementById("keyHexDec");
-
-  const ivHexDec      = document.getElementById("ivHexDec");
-
-  const plaintextDec  = document.getElementById("plaintextDec");
-
-
-  const pastePlaintext     = document.getElementById("pastePlaintext");
-
-  const pasteCiphertextDec = document.getElementById("pasteCiphertextDec");
-
-  const pasteKeyDec        = document.getElementById("pasteKeyDec");
-
-  const pasteIvDec         = document.getElementById("pasteIvDec");
-
-
-  const decryptBtn         = document.getElementById("decryptBtn");
-
-
-  async function copyToClipboard(text){
-
-    if(!text) return;
-
-    try{
-
-      await navigator.clipboard.writeText(text);
-
-    }catch(e){
-
-      console.error("Copy failed", e);
-
-    }
-
-  }
-
-
-  async function pasteIntoField(field){
-
-    try{
-
-      if(!navigator.clipboard || !navigator.clipboard.readText){
-
-        alert("Clipboard is not available. Please paste manually.");
-
-        return;
-
-      }
-
-      const text = await navigator.clipboard.readText();
-
-      if(!text){
-
-        alert("Clipboard is empty.");
-
-        return;
-
-      }
-
-      field.value = text;
-
-      field.focus();
-
-      if(field === ciphertextDec || field === keyHexDec || field === ivHexDec){
-
-        field.classList.remove("error");
-
-        field.placeholder = "";
-
-        updateDecryptState();
-
-      }
-
-    }catch(e){
-
-      alert("Please allow clipboard permission in your browser and try again.");
-
-      console.error("Paste failed", e);
-
-    }
-
-  }
-
-
-  function updateDecryptState(){
-
-    const hasCt  = ciphertextDec.value.trim().length > 0;
-
-    const hasKey = keyHexDec.value.trim().length > 0;
-
-    const hasIv  = ivHexDec.value.trim().length > 0;
-
-    if(hasCt && hasKey && hasIv){
-
-      decryptBtn.classList.remove("pending");
-
-    }else{
-
-      decryptBtn.classList.add("pending");
-
-    }
-
-  }
-
-
-  function handleFieldInput(){
-
-    if(this.value.trim()){
-
-      this.classList.remove("error");
-
-      this.placeholder = "";
-
-    }
-
-    updateDecryptState();
-
-  }
-
-
-  pastePlaintext.addEventListener("click", () => {
-
-    pasteIntoField(plaintext);
-
-  });
-
-  pasteCiphertextDec.addEventListener("click", () => {
-
-    pasteIntoField(ciphertextDec);
-
-  });
-
-  pasteKeyDec.addEventListener("click", () => {
-
-    pasteIntoField(keyHexDec);
-
-  });
-
-  pasteIvDec.addEventListener("click", () => {
-
-    pasteIntoField(ivHexDec);
-
-  });
-
-
-  ciphertextDec.addEventListener("input", handleFieldInput);
-
-  keyHexDec.addEventListener("input", handleFieldInput);
-
-  ivHexDec.addEventListener("input", handleFieldInput);
-
-
-  ciphertext.addEventListener("click", () => {
-
-    copyToClipboard(ciphertext.value.trim());
-
-  });
-
-
-  keyHex.addEventListener("click", () => {
-
-    if(!keyHex.classList.contains("reveal")){
-
-      keyHex.classList.add("reveal");
-
-      return;
-
-    }
-
-    copyToClipboard(keyHex.textContent.trim());
-
-  });
-
-
-  ivHex.addEventListener("click", () => {
-
-    if(!ivHex.classList.contains("reveal")){
-
-      ivHex.classList.add("reveal");
-
-      return;
-
-    }
-
-    copyToClipboard(ivHex.textContent.trim());
-
-  });
-
-
-  plaintextDec.addEventListener("click", () => {
-
-    if(!plaintextDec.classList.contains("reveal")){
-
-      plaintextDec.classList.add("reveal");
-
-      return;
-
-    }
-
-    copyToClipboard(plaintextDec.value.trim());
-
-  });
-
-
-  document.getElementById("encryptBtn").onclick = async () => {
-
-    const data   = new TextEncoder().encode(plaintext.value);
-
-    const rawKey = crypto.getRandomValues(new Uint8Array(32));
-
-    const iv     = crypto.getRandomValues(new Uint8Array(12));
-
-
-    const key = await crypto.subtle.importKey(
-
-      "raw",
-
-      rawKey,
-
-      {name:"AES-GCM"},
-
-      false,
-
-      ["encrypt"]
-
-    );
-
-    const buf = await crypto.subtle.encrypt({name:"AES-GCM",iv}, key, data);
-
-
-    ciphertext.value   = btoa(String.fromCharCode(...new Uint8Array(buf)));
-
-    keyHex.textContent = toHex(rawKey);
-
-    ivHex.textContent  = toHex(iv);
-
-
-    keyHex.classList.remove("reveal");
-
-    ivHex.classList.remove("reveal");
-
-  };
-
-
-  decryptBtn.onclick = async () => {
-
-    const ctVal  = ciphertextDec.value.trim();
-
-    const keyVal = keyHexDec.value.trim();
-
-    const ivVal  = ivHexDec.value.trim();
-
-
-    [ciphertextDec, keyHexDec, ivHexDec].forEach(f => {
-
-      f.classList.remove("error");
-
-      f.placeholder = "";
-
+  finally{ btn.disabled=false; btn.textContent='Decrypt →'; btn.style.background=''; btn.style.color=''; btn.style.borderColor=''; }
+}
+
+// ── UI HELPERS ───────────────────────────────────────────────
+function setOutput(divId,hidId,val){
+  const d=document.getElementById(divId);
+  d.textContent=val; d.classList.remove('reveal');
+  document.getElementById(hidId).value=val;
+}
+function showResult(id){
+  const el=document.getElementById(id);
+  el.style.display=''; el.style.animation='none';
+  void el.offsetWidth;
+  el.style.animation='resultSpring .5s cubic-bezier(.34,1.56,.64,1) forwards';
+}
+function revealOrCopy(el,hidId){
+  if(!el.classList.contains('reveal')){ el.classList.add('reveal'); return; }
+  const val=document.getElementById(hidId).value;
+  if(!val)return;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(val).then(()=>showToast('Copied to clipboard!')).catch(()=>fbCopy(val));
+  } else fbCopy(val);
+}
+function fbCopy(text){
+  const ta=document.createElement('textarea');
+  ta.value=text; ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try{document.execCommand('copy');showToast('Copied to clipboard!');}
+  catch(e){showToast('Copy failed. Select manually.',true);}
+  document.body.removeChild(ta);
+}
+async function pasteInto(id){
+  try{
+    if(navigator.clipboard&&navigator.clipboard.readText){
+      const t=await navigator.clipboard.readText();
+      if(!t){showToast('Clipboard is empty.',true);return;}
+      document.getElementById(id).value=t;
+      if(id==='encPlaintext')updateCharCount();
+      showToast('Pasted!');
+    } else showToast('Paste manually with Ctrl+V / long press.',true);
+  }catch(e){showToast('Allow clipboard permission and try again.',true);}
+}
+function showToast(msg,isErr=false){
+  const c=document.getElementById('toastContainer');
+  const el=document.createElement('div');
+  el.className='toast';
+  if(isErr){el.style.background='var(--red)';el.style.color='#fff';}
+  el.textContent=msg; c.appendChild(el);
+  const dur=isErr?4200:2200;
+  setTimeout(()=>el.remove(),dur);
+}
+
+// ── BURST PARTICLES ──────────────────────────────────────────
+function burst(btn){
+  const r=btn.getBoundingClientRect();
+  for(let i=0;i<10;i++){
+    const el=document.createElement('div');
+    const angle=(i/10)*Math.PI*2;
+    const dist=35+Math.random()*25;
+    const tx=Math.cos(angle)*dist, ty=Math.sin(angle)*dist;
+    el.style.cssText=`position:fixed;width:5px;height:5px;border-radius:50%;background:var(--accent);pointer-events:none;z-index:9999;left:${r.left+r.width/2}px;top:${r.top+r.height/2}px;transform:translate(-50%,-50%);transition:all .55s cubic-bezier(.16,1,.3,1) ${i*.035}s;`;
+    document.body.appendChild(el);
+    requestAnimationFrame(()=>{
+      el.style.transform=`translate(calc(-50% + ${tx}px),calc(-50% + ${ty}px)) scale(.4)`;
+      el.style.opacity='0';
     });
+    setTimeout(()=>el.remove(),650);
+  }
+}
 
-
-    const missing = [];
-
-    if(!ctVal)  missing.push(ciphertextDec);
-
-    if(!keyVal) missing.push(keyHexDec);
-
-    if(!ivVal)  missing.push(ivHexDec);
-
-
-    if(missing.length > 0){
-
-      missing.forEach(f => {
-
-        f.classList.add("error");
-
-        f.placeholder = "Required Text for Decrypt";
-
-      });
-
-      alert("Text required!");
-
-      return;
-
-    }
-
-
-    try{
-
-      const ct       = base64ToBytes(ctVal);
-
-      const keyBytes = hexToBytes(keyVal);
-
-      const ivBytes  = hexToBytes(ivVal);
-
-
-      const key = await crypto.subtle.importKey(
-
-        "raw",
-
-        keyBytes,
-
-        {name:"AES-GCM"},
-
-        false,
-
-        ["decrypt"]
-
-      );
-
-      const buf = await crypto.subtle.decrypt({name:"AES-GCM",iv:ivBytes}, key, ct);
-
-
-      const text = new TextDecoder().decode(buf);
-
-      plaintextDec.value = text;
-
-      plaintextDec.classList.remove("reveal");
-
-    }catch(e){
-
-      console.error("Decryption failed", e);
-
-      alert("Please enter your right information for Decrypt.");
-
-      plaintextDec.value = "";
-
-      plaintextDec.classList.remove("reveal");
-
-    }
-
-  };
-
-
-  window.addEventListener("beforeunload", () => {
-
-    keyHex.textContent = "";
-
-    ivHex.textContent  = "";
-
-    keyHexDec.value    = "";
-
-    ivHexDec.value     = "";
-
-    plaintextDec.value = "";
-
-    plaintextDec.classList.remove("reveal");
-
-  });
-
-
-  updateDecryptState();
-
+// ── CLEANUP ──────────────────────────────────────────────────
+function clearSensitive(){
+  ['encOutput','encKeyOut','decOutput'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent='';el.classList.remove('reveal');}});
+  ['encPassword','decPassword','decKey','encPlaintext'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['encOutputVal','encKeyOutVal','decOutputVal'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('encResultCard').style.display='none';
+  document.getElementById('decResultCard').style.display='none';
+}
+window.addEventListener('beforeunload', clearSensitive);
+window.addEventListener('pageshow', e=>{ if(e.persisted) clearSensitive(); });
 </script>
-<div style="text-align:center; margin-top:30px; padding:15px; font-size:0.9em; color:#444;">
-  <p><strong>Why Trust This Tool?</strong></p>
-  <p>This tool is completely open source and non-profitable. All encryption and decryption happen only on your device and no data is ever sent to the internet or any server. You can review the full source code on our <a href="https://github.com/BlockVeilBuild/blockveil-aes-tool" target="_blank">GitHub</a> to verify its safety yourself.</p>
-  <p>This is a free tool made for everyone. We believe in transparency and security, so you can trust that your information stays yours.</p>
-  <p><em>We build in silence.</em></p>
-</div>
-<footer style="text-align:center; margin-top:40px; padding:20px 0; font-size:0.9em; color:#555;">
-  <p>Created by the <a href="https://blockveil.free.nf" target="_blank">BlockVeil Team</a>.  
-  Source code on <a href="https://github.com/BlockVeilBuild/blockveil-aes-tool" target="_blank">GitHub</a>.</p>
-</footer>
 </body>
-
 </html>
