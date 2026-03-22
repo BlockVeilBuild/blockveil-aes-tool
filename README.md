@@ -1,17 +1,20 @@
 # blockveil-aes-tool
 
-> AES-256-GCM encryption and decryption tool by BlockVeil.  
+> AES-256-GCM encryption and decryption tool by BlockVeil.
 > 100% client-side. No server. No logs. No installation.
 
 ## Features
 
 - AES-256-GCM encryption with Password or 256-bit Key mode
-- PBKDF2 key derivation (310,000 iterations)
-- Dark mode with animated theme transition
-- Password strength indicator
-- Floating hex particle background
-- Blurred output fields — click to reveal, click again to copy
-- Fully responsive — works on all modern browsers
+- PBKDF2 key derivation with 1,000,000 iterations and 256-bit salt
+- Dark mode with full-screen ripple transition animation
+- Password strength indicator (Very Weak to Very Strong)
+- Floating hex particle background (canvas based)
+- Output fields blurred by default. Click to reveal, click again to copy
+- Auto session clear after 5 minutes of inactivity
+- Output auto-blur after 30 seconds of being revealed
+- Clipboard automatically cleared after 1 minute
+- Fully responsive. Works on all screen sizes and browsers
 
 ## How to Use
 
@@ -23,8 +26,11 @@
 
 - All encryption runs entirely in your browser
 - No data ever leaves your device
+- AES-256-GCM, the same standard trusted by governments and financial institutions worldwide
+- PBKDF2 with 1,000,000 iterations and 256-bit salt
+- bfcache protection. Sensitive data cleared on browser history restore
 - Built on the Web Crypto API
-- Open source — review the code yourself
+- Open source. Review the code yourself
 
 ## License
 
