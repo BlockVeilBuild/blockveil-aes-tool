@@ -468,7 +468,7 @@ const toHex=a=>Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join('');
 function hexToBytes(h){ if(!h||h.length%2)throw new Error('Invalid hex'); const o=new Uint8Array(h.length/2); for(let i=0;i<o.length;i++)o[i]=parseInt(h.substr(i*2,2),16); return o; }
 function bufToB64(buf){ const b=new Uint8Array(buf);let s=''; for(let i=0;i<b.byteLength;i++)s+=String.fromCharCode(b[i]); return btoa(s); }
 function b64ToBuf(b){ const s=atob(b);const a=new Uint8Array(s.length); for(let i=0;i<s.length;i++)a[i]=s.charCodeAt(i); return a; }
-async function deriveKey(pw,salt,use){ const enc=new TextEncoder(); const base=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveKey']); return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:310000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,[use]); }
+async function deriveKey(pw,salt,use){ const enc=new TextEncoder(); const base=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveKey']); return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:1000000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,[use]); }
 
 // ── ENCRYPT ──────────────────────────────────────────────────
 async function doEncrypt(){
@@ -484,8 +484,14 @@ async function doEncrypt(){
     const iv=crypto.getRandomValues(new Uint8Array(12));
     if(encMethod==='password'){
       const pw=document.getElementById('encPassword').value;
-      if(!pw){errEl.textContent='Enter a password first.';errEl.style.display='';document.getElementById('encPassword').classList.add('field-error');return;}
-      const salt=crypto.getRandomValues(new Uint8Array(16));
+      if(!pw){
+        errEl.textContent='Enter a password first.';errEl.style.display='';
+        document.getElementById('encPassword').classList.add('field-error');
+        btn.disabled=false; btn.textContent='Encrypt →';
+        return;
+      }
+      document.getElementById('encPassword').classList.remove('field-error');
+      const salt=crypto.getRandomValues(new Uint8Array(32));
       const key=await deriveKey(pw,salt,'encrypt');
       const buf=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,data);
       setOutput('encOutput','encOutputVal',toHex(salt)+toHex(iv)+bufToB64(buf));
@@ -517,8 +523,8 @@ async function doDecrypt(){
   try{
     let pt='';
     if(decMethod==='password'){
-      if(bundle.length<57)throw new Error('Invalid encrypted text.');
-      const salt=hexToBytes(bundle.slice(0,32)), iv=hexToBytes(bundle.slice(32,56)), ct=b64ToBuf(bundle.slice(56));
+      if(bundle.length<89)throw new Error('Invalid encrypted text.');
+      const salt=hexToBytes(bundle.slice(0,64)), iv=hexToBytes(bundle.slice(64,88)), ct=b64ToBuf(bundle.slice(88));
       const pw=document.getElementById('decPassword').value;
       if(!pw)throw new Error('Enter the password.');
       const key=await deriveKey(pw,salt,'decrypt');
@@ -533,6 +539,7 @@ async function doDecrypt(){
       pt=new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv},key,ct));
     }
     setOutput('decOutput','decOutputVal',pt);
+    document.getElementById('decCiphertext').classList.remove('field-error');
     showResult('decResultCard');
     showToast('Decrypted successfully!');
     burst(btn);
@@ -558,18 +565,22 @@ function showResult(id){
   el.style.animation='resultSpring .5s cubic-bezier(.34,1.56,.64,1) forwards';
 }
 function revealOrCopy(el,hidId){
-  if(!el.classList.contains('reveal')){ el.classList.add('reveal'); return; }
+  if(!el.classList.contains('reveal')){
+    el.classList.add('reveal');
+    scheduleBlur(el);
+    return;
+  }
   const val=document.getElementById(hidId).value;
   if(!val)return;
   if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(val).then(()=>showToast('Copied to clipboard!')).catch(()=>fbCopy(val));
+    navigator.clipboard.writeText(val).then(()=>{ showToast('Copied to clipboard!'); scheduleClipboardClear(); }).catch(()=>fbCopy(val));
   } else fbCopy(val);
 }
 function fbCopy(text){
   const ta=document.createElement('textarea');
   ta.value=text; ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';
   document.body.appendChild(ta); ta.focus(); ta.select();
-  try{document.execCommand('copy');showToast('Copied to clipboard!');}
+  try{document.execCommand('copy');showToast('Copied to clipboard!');scheduleClipboardClear();}
   catch(e){showToast('Copy failed. Select manually.',true);}
   document.body.removeChild(ta);
 }
@@ -612,11 +623,52 @@ function burst(btn){
   }
 }
 
+// ── AUTO BLUR (30 sec after reveal) ──────────────────────────
+const blurTimers = {};
+function scheduleBlur(el){
+  const id = el.id;
+  if(blurTimers[id]) clearTimeout(blurTimers[id]);
+  blurTimers[id] = setTimeout(()=>{
+    if(el.classList.contains('reveal')){
+      el.classList.remove('reveal');
+      showToast('Output hidden for security.');
+    }
+  }, 30 * 1000);
+}
+
+// ── CLIPBOARD AUTO CLEAR (1 min) ─────────────────────────────
+let clipboardTimer = null;
+function scheduleClipboardClear(){
+  if(clipboardTimer) clearTimeout(clipboardTimer);
+  clipboardTimer = setTimeout(async ()=>{
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        await navigator.clipboard.writeText('');
+        showToast('Clipboard cleared for security.');
+      }
+    } catch(e){}
+  }, 60 * 1000);
+}
+
+// ── AUTO CLEAR TIMER (5 min) ─────────────────────────────────
+let autoClearTimer = null;
+function resetAutoTimer(){
+  if(autoClearTimer) clearTimeout(autoClearTimer);
+  autoClearTimer = setTimeout(()=>{
+    clearSensitive();
+    showToast('Session cleared for security. (5 min timeout)',true);
+  }, 5 * 60 * 1000);
+}
+document.addEventListener('click', resetAutoTimer);
+document.addEventListener('keydown', resetAutoTimer);
+resetAutoTimer();
+
 // ── CLEANUP ──────────────────────────────────────────────────
 function clearSensitive(){
   ['encOutput','encKeyOut','decOutput'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent='';el.classList.remove('reveal');}});
-  ['encPassword','decPassword','decKey','encPlaintext'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['encPassword','decPassword','decKey','encPlaintext','decCiphertext'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   ['encOutputVal','encKeyOutVal','decOutputVal'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['encOutput','encKeyOut','decOutput','encPlaintext','decCiphertext','decKey','encPassword','decPassword'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('field-error');});
   document.getElementById('encResultCard').style.display='none';
   document.getElementById('decResultCard').style.display='none';
 }
